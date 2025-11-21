@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Prototipo - Plataforma de Salud Comunitaria Conectada</title>
+  <style>
+    :root{--accent:#0f6;--muted:#667;--bg:#f6f8fb;--card:#ffffff}
+    *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    body{margin:0;background:var(--bg);color:#102;
+      -webkit-font-smoothing:antialiased}
+    header{background:linear-gradient(90deg,#0b7a5f,#0f6);color:#012;padding:18px 24px;display:flex;gap:18px;align-items:center}
+    header h1{margin:0;font-size:18px}
+    .container{max-width:1100px;margin:22px auto;padding:0 18px}
+    nav{display:flex;gap:8px}
+    .btn{background:#fff;padding:10px 12px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);cursor:pointer}
+
+    .grid{display:grid;grid-template-columns:320px 1fr;gap:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(15,20,25,0.06)}
+    .sidebar .logo{font-weight:700;margin-bottom:12px}
+    .menu{display:flex;flex-direction:column;gap:8px}
+    .menu button{display:flex;gap:8px;align-items:center;padding:10px;border-radius:8px;border:0;background:transparent;text-align:left}
+    .search{display:flex;gap:8px;margin-bottom:12px}
+    input[type=text],input[type=date],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef5}
+    label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .small{font-size:12px;color:#446;padding-top:6px}
+
+    .header-actions{margin-left:auto;display:flex;gap:8px}
+    .ds-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;border-bottom:1px dashed #eef2f6;text-align:left;font-size:14px}
+    th{font-size:12px;color:var(--muted)}
+
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#eefdf6;color:#025}
+    footer{margin-top:18px;text-align:center;color:#667;font-size:13px}
+
+    /* Responsive */
+    @media (max-width:900px){.grid{grid-template-columns:1fr}.ds-grid{grid-template-columns:1fr}.header-actions{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36'><rect width='36' height='36' rx='8' fill='%230b7a5f'/><text x='50%' y='55%' fill='white' font-size='18' font-family='Arial' text-anchor='middle'>HC</text></svg>" alt="logo" style="width:42px;height:42px;border-radius:8px;"/>
+      <h1>Plataforma Salud Comunitaria — Prototipo</h1>
+    </div>
+    <div class="header-actions">
+      <button class="btn">Notificaciones (3)</button>
+      <button class="btn">Perfil</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="grid">
+      <aside class="sidebar card">
+        <div class="logo">Menú</div>
+        <div class="search">
+          <input type="text" id="quickSearch" placeholder="Buscar paciente o promotor" />
+          <button class="btn" onclick="quickSearch()">Ir</button>
+        </div>
+        <div class="menu">
+          <button onclick="show('dashboard')">Tablero</button>
+          <button onclick="show('pacientes')">Pacientes</button>
+          <button onclick="show('agenda')">Agendamiento</button>
+          <button onclick="show('telemedicina')">Telemedicina</button>
+          <button onclick="show('alertas')">Alertas & Campañas</button>
+          <button onclick="show('reportes')">Reportes</button>
+        </div>
+        <div style="margin-top:14px"><small class="small">Proyecto piloto — Valle del Cauca</small></div>
+      </aside>
+
+      <main>
+        <!-- Dashboard -->
+        <section id="dashboard" class="card" style="display:block">
+          <h2>Tablero de control</h2>
+          <div class="ds-grid" style="margin-top:12px">
+            <div class="card">
+              <h3>Pacientes registrados</h3>
+              <div style="font-size:28px;font-weight:700;margin-top:8px">30</div>
+              <div class="small">Meta piloto: 30</div>
+            </div>
+            <div class="card">
+              <h3>Citas activas</h3>
+              <div style="font-size:28px;font-weight:700;margin-top:8px">6</div>
+              <div class="small">Próximas 7 días</div>
+            </div>
+            <div class="card">
+              <h3>Alertas</h3>
+              <div style="font-size:28px;font-weight:700;margin-top:8px">2 campañas</div>
+              <div class="small">Última: Vacunación</div>
+            </div>
+          </div>
+
+          <div style="margin-top:18px" class="card">
+            <h3>Actividad reciente</h3>
+            <table>
+              <thead><tr><th>Fecha</th><th>Evento</th><th>Usuario</th></tr></thead>
+              <tbody>
+                <tr><td>2025-10-22</td><td>Registro paciente: María P.</td><td>Promotor: J. Muñoz</td></tr>
+                <tr><td>2025-10-27</td><td>Cita agendada: Teleconsulta</td><td>Médico</td></tr>
+                <tr><td>2025-10-30</td><td>Campaña: Vacunación</td><td>Administración</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Pacientes -->
+        <section id="pacientes" class="card" style="display:none">
+          <h2>Registro y lista de pacientes</h2>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+            <div style="flex:1;min-width:320px" class="card">
+              <h4>Crear / Editar paciente</h4>
+              <form id="pacienteForm" onsubmit="return savePaciente(event)">
+                <label>Nombre completo</label>
+                <input type="text" id="nombre" required />
+                <div class="form-row" style="margin-top:8px">
+                  <div>
+                    <label>Documento</label>
+                    <input type="text" id="documento" />
+                  </div>
+                  <div>
+                    <label>Fecha de nacimiento</label>
+                    <input type="date" id="nacimiento" />
+                  </div>
+                </div>
+                <label style="margin-top:8px">Dirección</label>
+                <input type="text" id="direccion" />
+                <label style="margin-top:8px">Antecedentes / Observaciones</label>
+                <textarea id="observaciones" rows="4"></textarea>
+                <div style="margin-top:8px;display:flex;gap:8px">
+                  <button class="btn" type="submit">Guardar</button>
+                  <button class="btn" type="button" onclick="resetForm()">Cancelar</button>
+                </div>
+              </form>
+              <div id="mensaje" style="margin-top:8px;font-size:13px;color:green"></div>
+            </div>
+
+            <div style="flex:1;min-width:320px" class="card">
+              <h4>Lista de pacientes</h4>
+              <table id="tablaPacientes">
+                <thead><tr><th>Nombre</th><th>Documento</th><th>Acción</th></tr></thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Agenda -->
+        <section id="agenda" class="card" style="display:none">
+          <h2>Agendamiento de citas</h2>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+            <div style="flex:1;min-width:300px" class="card">
+              <h4>Programar cita</h4>
+              <form onsubmit="return agendar(event)">
+                <label>Paciente</label>
+                <select id="selectPaciente"></select>
+                <label style="margin-top:8px">Fecha</label>
+                <input type="date" id="fechaCita" required />
+                <label style="margin-top:8px">Hora</label>
+                <input type="text" id="horaCita" placeholder="08:30" />
+                <label style="margin-top:8px">Tipo</label>
+                <select id="tipoCita"><option>Presencial</option><option>Teleconsulta</option></select>
+                <div style="margin-top:8px"><button class="btn" type="submit">Agendar</button></div>
+              </form>
+            </div>
+            <div style="flex:2;min-width:320px" class="card">
+              <h4>Citas próximas</h4>
+              <table id="tablaCitas">
+                <thead><tr><th>Fecha</th><th>Hora</th><th>Paciente</th><th>Tipo</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Telemedicina -->
+        <section id="telemedicina" class="card" style="display:none">
+          <h2>Telemedicina</h2>
+          <p>Espacio demostrativo para iniciar una consulta por video (placeholder).</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div class="card" style="flex:1;min-width:300px">
+              <h4>Iniciar consulta</h4>
+              <label>Paciente</label>
+              <select id="selectPaciente2"></select>
+              <div style="margin-top:8px"><button class="btn" onclick="startConsult()">Iniciar llamada</button></div>
+              <p class="small">Nota: en el prototipo se abre un modal simulado.</p>
+            </div>
+            <div class="card" style="flex:2;min-width:300px">
+              <h4>Ventana de consulta</h4>
+              <div id="videoMock" style="height:220px;border-radius:8px;border:1px dashed #dfe9f3;display:flex;align-items:center;justify-content:center">Video / Chat simulado</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Alertas -->
+        <section id="alertas" class="card" style="display:none">
+          <h2>Alertas y campañas</h2>
+          <form onsubmit="return crearAlerta(event)">
+            <label>Título de campaña</label>
+            <input type="text" id="tituloCampania" />
+            <label style="margin-top:8px">Mensaje</label>
+            <textarea id="mensajeCampania" rows="3"></textarea>
+            <div style="margin-top:8px"><button class="btn" type="submit">Publicar campaña</button></div>
+          </form>
+          <div style="margin-top:12px">
+            <h4>Campañas activas</h4>
+            <ul id="listaAlertas"></ul>
+          </div>
+        </section>
+
+        <!-- Reportes -->
+        <section id="reportes" class="card" style="display:none">
+          <h2>Reportes estadísticos (mock)</h2>
+          <p class="small">En la versión funcional se exportarían CSV y gráficos interactivos. Aquí se muestran métricas clave.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+            <div class="card"><h4>Pacientes por rango de edad</h4><p class="small">0-14: 4 | 15-64: 20 | 65+: 6</p></div>
+            <div class="card"><h4>Consultas por tipo</h4><p class="small">Teleconsulta: 12 | Presencial: 18</p></div>
+          </div>
+        </section>
+
+        <footer>Prototipo HTML — creado como punto de partida para el proyecto de grado. Puedes exportarlo y conectarlo con APIs reales.</footer>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // Estado en memoria (prototipo)
+    const pacientes = [
+      {id:1,nombre:'María Pérez',documento:'102030',nacimiento:'1985-08-03'},
+      {id:2,nombre:'Juan Gómez',documento:'203040',nacimiento:'2001-02-14'}
+    ];
+    const citas = [
+      {fecha:'2025-11-18',hora:'09:00',paciente:'María Pérez',tipo:'Teleconsulta'}
+    ];
+
+    function show(id){
+      ['dashboard','pacientes','agenda','telemedicina','alertas','reportes'].forEach(s=>{
+        document.getElementById(s).style.display = s===id ? 'block' : 'none';
+      });
+      if(id==='pacientes') renderPacientes();
+      if(id==='agenda') renderAgenda();
+      if(id==='telemedicina') populateSelects();
+      if(id==='alertas') renderAlertas();
+    }
+
+    function renderPacientes(){
+      const tbody = document.querySelector('#tablaPacientes tbody'); tbody.innerHTML='';
+      pacientes.forEach(p=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${p.nombre}</td><td>${p.documento||''}</td><td><button class='btn' onclick='editPaciente(${p.id})'>Editar</button></td>`;
+        tbody.appendChild(tr);
+      });
+      populateSelects();
+    }
+    function savePaciente(e){
+      e.preventDefault();
+      const nombre = document.getElementById('nombre').value;
+      const documento = document.getElementById('documento').value;
+      pacientes.push({id:Date.now(),nombre,documento});
+      document.getElementById('mensaje').textContent='Paciente guardado.';
+      resetForm(); renderPacientes();
+      return false;
+    }
+    function resetForm(){document.getElementById('pacienteForm').reset();document.getElementById('mensaje').textContent='';}
+    function editPaciente(id){
+      const p = pacientes.find(x=>x.id===id); if(!p) return;
+      document.getElementById('nombre').value = p.nombre;
+      document.getElementById('documento').value = p.documento;
+    }
+
+    function populateSelects(){
+      const sel = document.getElementById('selectPaciente'); const sel2 = document.getElementById('selectPaciente2');
+      if(!sel) return;
+      sel.innerHTML = '';
+      sel2.innerHTML = '';
+      pacientes.forEach(p=>{
+        const opt = document.createElement('option'); opt.value = p.id; opt.textContent = p.nombre; sel.appendChild(opt);
+        const opt2 = opt.cloneNode(true); sel2.appendChild(opt2);
+      });
+    }
+
+    function agendar(e){
+      e.preventDefault(); const pid = document.getElementById('selectPaciente').value;
+      const paciente = pacientes.find(x=>x.id==pid)?.nombre || 'Desconocido';
+      const fecha = document.getElementById('fechaCita').value; const hora = document.getElementById('horaCita').value; const tipo = document.getElementById('tipoCita').value;
+      citas.push({fecha,hora,paciente,tipo}); renderAgenda(); return false;
+    }
+    function renderAgenda(){
+      const tbody = document.querySelector('#tablaCitas tbody'); tbody.innerHTML='';
+      citas.forEach(c=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${c.fecha}</td><td>${c.hora}</td><td>${c.paciente}</td><td>${c.tipo}</td>`;tbody.appendChild(tr);});
+    }
+
+    function startConsult(){
+      alert('Aquí se simula el inicio de la teleconsulta (prototipo).');
+    }
+
+    // Alertas
+    const alertas = [];
+    function crearAlerta(e){
+      e.preventDefault(); const t = document.getElementById('tituloCampania').value; const m = document.getElementById('mensajeCampania').value;
+      if(!t) return false; alertas.push({titulo:t,mensaje:m,fecha:new Date().toISOString().slice(0,10)}); renderAlertas(); document.getElementById('tituloCampania').value=''; document.getElementById('mensajeCampania').value=''; return false;
+    }
+    function renderAlertas(){
+      const ul = document.getElementById('listaAlertas'); ul.innerHTML=''; alertas.forEach(a=>{const li=document.createElement('li');li.innerHTML=`<strong>${a.titulo}</strong> — ${a.mensaje} <small class='small'>(${a.fecha})</small>`;ul.appendChild(li);});
+    }
+
+    function quickSearch(){
+      const q = document.getElementById('quickSearch').value.toLowerCase();
+      if(!q) return alert('Ingresa un término.');
+      const res = pacientes.find(p=>p.nombre.toLowerCase().includes(q) || (p.documento||'').includes(q));
+      if(res){ show('pacientes'); setTimeout(()=>{ editPaciente(res.id) },200); } else { alert('No se encontró.'); }
+    }
+
+    // Inicialización
+    renderPacientes(); renderAgenda();
+  </script>
+  <!-- LOGIN OVERLAY (prototipo) -->
+  <style>
+    /* estilos del modal de login */
+    #loginOverlay{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:flex;align-items:center;justify-content:center;z-index:9999}
+    #loginBox{background:var(--card);padding:22px;border-radius:12px;min-width:320px;box-shadow:0 12px 40px rgba(2,6,23,0.25)}
+    #loginBox h3{margin:0 0 8px 0}
+    #loginBox input{margin-top:8px}
+    #loginError{color:#c22;margin-top:8px;font-size:13px}
+  </style>
+
+  <div id="loginOverlay">
+    <div id="loginBox">
+      <h3>Iniciar sesión</h3>
+      <form id="loginForm" onsubmit="return checkLogin(event)">
+        <label for="loginUser">Usuario</label>
+        <input id="loginUser" type="text" placeholder="usuario" required />
+        <label for="loginPass">Contraseña</label>
+        <input id="loginPass" type="password" placeholder="contraseña" required />
+        <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+          <button class="btn" type="submit">Entrar</button>
+          <button class="btn" type="button" onclick="useDemoAccount()">Cuenta demo</button>
+        </div>
+        <div id="loginError"></div>
+      </form>
+      <p class="small" style="margin-top:10px">Credenciales demo: <strong>admin / admin123</strong> o <strong>promotor / prom123</strong></p>
+    </div>
+  </div>
+
+  <script>
+    // Autenticación de prototipo (mock)
+    const users = [
+      {username:'admin',password:'admin123',role:'admin',display:'Administración'},
+      {username:'promotor',password:'prom123',role:'promotor',display:'Promotor'}
+    ];
+
+    function showHeaderUser(u){
+      const ha = document.querySelector('.header-actions');
+      ha.innerHTML = `<div style=\"display:flex;gap:8px;align-items:center\"><span class=\"pill\">${u.display}</span><button class=\"btn\" onclick=\"logout()\">Cerrar sesión</button></div>`;
+    }
+
+    function checkLogin(e){
+      e.preventDefault(); const u = document.getElementById('loginUser').value.trim(); const p = document.getElementById('loginPass').value;
+      const found = users.find(x=>x.username===u && x.password===p);
+      if(found){
+        localStorage.setItem('mock_user', JSON.stringify(found));
+        document.getElementById('loginOverlay').style.display='none';
+        showHeaderUser(found);
+        // desbloquear funcionalidades si fuera necesario
+        return false;
+      } else {
+        document.getElementById('loginError').textContent = 'Usuario o contraseña incorrectos.'; return false;
+      }
+    }
+    function useDemoAccount(){
+      document.getElementById('loginUser').value='admin'; document.getElementById('loginPass').value='admin123';
+    }
+    function logout(){
+      localStorage.removeItem('mock_user'); document.getElementById('loginOverlay').style.display='flex';
+      const ha = document.querySelector('.header-actions'); ha.innerHTML = `<button class=\"btn\">Notificaciones (3)</button><button class=\"btn\">Perfil</button>`;
+    }
+
+    // Inicializa estado de sesión si existe
+    (function(){
+      try{
+        const saved = JSON.parse(localStorage.getItem('mock_user'));
+        if(saved){ document.getElementById('loginOverlay').style.display='none'; showHeaderUser(saved); }
+      }catch(e){ /* ignore */ }
+    })();
+  </script>
+
+</body>
+</html>
