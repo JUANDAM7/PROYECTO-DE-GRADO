@@ -316,6 +316,45 @@
 
     // Inicialización
     renderPacientes(); renderAgenda();
+
+// Registrar paciente
+function openRegister(){
+  document.getElementById('registerOverlay').style.display='flex';
+}
+
+function closeRegister(){
+  document.getElementById('registerOverlay').style.display='none';
+}
+
+function registerPatient(e){
+  e.preventDefault();
+  const nombre = document.getElementById('regNombre').value.trim();
+  const doc = document.getElementById('regDoc').value.trim();
+  const user = document.getElementById('regUser').value.trim();
+  const pass = document.getElementById('regPass').value;
+
+  // Guardar usuario paciente
+  users.push({
+    username: user,
+    password: pass,
+    role: 'paciente',
+    display: nombre,
+    documento: doc,
+    id: Date.now()
+  });
+
+  // Guardar paciente en la lista
+  pacientes.push({
+    id: Date.now(),
+    nombre: nombre,
+    documento: doc
+  });
+
+  closeRegister();
+  alert("Cuenta creada. Ahora puedes iniciar sesión.");
+  return false;
+}
+
   </script>
   <!-- LOGIN OVERLAY (prototipo) -->
   <style>
@@ -329,20 +368,20 @@
 
   <div id="loginOverlay">
     <div id="loginBox">
-      <h3>Iniciar sesión</h3>
-      <form id="loginForm" onsubmit="return checkLogin(event)">
-        <label for="loginUser">Usuario</label>
-        <input id="loginUser" type="text" placeholder="usuario" required />
-        <label for="loginPass">Contraseña</label>
-        <input id="loginPass" type="password" placeholder="contraseña" required />
-        <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
-          <button class="btn" type="submit">Entrar</button>
-          <button class="btn" type="button" onclick="useDemoAccount()">Cuenta demo</button>
-        </div>
-        <div id="loginError"></div>
-      </form>
-      <p class="small" style="margin-top:10px">Credenciales demo: <strong>admin / admin123</strong> o <strong>promotor / prom123</strong></p>
+  <h3>Iniciar sesión</h3>
+  <form id="loginForm" onsubmit="return checkLogin(event)">
+    <label for="loginUser">Usuario</label>
+    <input id="loginUser" type="text" placeholder="usuario" required />
+    <label for="loginPass">Contraseña</label>
+    <input id="loginPass" type="password" placeholder="contraseña" required />
+    <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+      <button class="btn" type="submit">Entrar</button>
+      <button class="btn" type="button" onclick="useDemoAccount()">Cuenta demo</button>
+      <button class="btn" type="button" onclick="openRegister()">Crear cuenta</button>
     </div>
+    <div id="loginError"></div>
+  </form>
+</div>
   </div>
 
   <script>
@@ -358,18 +397,23 @@
     }
 
     function checkLogin(e){
-      e.preventDefault(); const u = document.getElementById('loginUser').value.trim(); const p = document.getElementById('loginPass').value;
-      const found = users.find(x=>x.username===u && x.password===p);
-      if(found){
-        localStorage.setItem('mock_user', JSON.stringify(found));
-        document.getElementById('loginOverlay').style.display='none';
-        showHeaderUser(found);
-        // desbloquear funcionalidades si fuera necesario
-        return false;
-      } else {
-        document.getElementById('loginError').textContent = 'Usuario o contraseña incorrectos.'; return false;
-      }
-    }
+  e.preventDefault();
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const found = users.find(x => x.username === u && x.password === p);
+
+  if(found){
+    localStorage.setItem('mock_user', JSON.stringify(found));
+    document.getElementById('loginOverlay').style.display='none';
+    showHeaderUser(found);
+    applyRolePermissions(found);
+    return false;
+  } else {
+    document.getElementById('loginError').textContent = 'Usuario o contraseña incorrectos.';
+    return false;
+  }
+}
+
     function useDemoAccount(){
       document.getElementById('loginUser').value='admin'; document.getElementById('loginPass').value='admin123';
     }
@@ -385,7 +429,62 @@
         if(saved){ document.getElementById('loginOverlay').style.display='none'; showHeaderUser(saved); }
       }catch(e){ /* ignore */ }
     })();
+
+function applyRolePermissions(user){
+  const adminMenus = ['pacientes','alertas','reportes','dashboard'];
+  const patientMenus = ['agenda','telemedicina'];
+
+  if(user.role === 'paciente'){
+    // Ocultar menú admin/promotor
+    adminMenus.forEach(id=>{
+      document.querySelector(`button[onclick="show('${id}')"]`).style.display='none';
+    });
+
+    // Ocultar búsquedas y herramientas
+    document.querySelector('.search').style.display='none';
+
+    // Mostrar solo módulos permitidos
+    show('agenda');
+
+    // Filtrar citas solo del paciente
+    const nombrePaciente = user.display;
+    const oldRender = renderAgenda;
+    renderAgenda = function(){
+      const tbody = document.querySelector('#tablaCitas tbody'); 
+      tbody.innerHTML = '';
+      citas
+        .filter(c => c.paciente === nombrePaciente)
+        .forEach(c=>{
+          const tr = document.createElement('tr');
+          tr.innerHTML=`<td>${c.fecha}</td><td>${c.hora}</td><td>${c.paciente}</td><td>${c.tipo}</td>`;
+          tbody.appendChild(tr);
+        });
+    };
+  }
+}
   </script>
+
+<!-- Modal de registro paciente -->
+<div id="registerOverlay" style="display:none;position:fixed;inset:0;background:rgba(2,6,23,0.6);display:flex;align-items:center;justify-content:center;z-index:99999">
+  <div id="registerBox" style="background:white;padding:22px;border-radius:12px;min-width:320px">
+    <h3>Crear cuenta de paciente</h3>
+    <form id="registerForm" onsubmit="return registerPatient(event)">
+      <label>Nombre completo</label>
+      <input type="text" id="regNombre" required />
+      <label>Documento</label>
+      <input type="text" id="regDoc" required />
+      <label>Usuario</label>
+      <input type="text" id="regUser" required />
+      <label>Contraseña</label>
+      <input type="password" id="regPass" required />
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn" type="submit">Registrar</button>
+        <button class="btn" type="button" onclick="closeRegister()">Cancelar</button>
+      </div>
+      <div id="regError" style="color:#c22;margin-top:8px;font-size:13px"></div>
+    </form>
+  </div>
+</div>
 
 </body>
 </html>
